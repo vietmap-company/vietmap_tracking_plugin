@@ -1,5 +1,8 @@
 # Vietmap Tracking Plugin
 
+[![pub package](https://img.shields.io/pub/v/vietmap_tracking_plugin.svg)](https://pub.dev/packages/vietmap_tracking_plugin)
+[![Platform](https://img.shields.io/badge/platform-android%20%7C%20ios-lightgrey.svg)](https://pub.dev/packages/vietmap_tracking_plugin)
+
 A comprehensive Flutter plugin for GPS tracking and location data transmission to Vietmap's tracking API. This plugin provides both native platform integration and pure Dart HTTP client functionality for maximum flexibility, including background location tracking support.
 
 ## Features
@@ -127,27 +130,7 @@ void main() async {
 }
 ```
 
-### 2. Send GPS Location
-
-```dart
-// Create a GPS location
-final location = GpsLocation(
-  latitude: 21.0285,
-  longitude: 105.8542,
-  accuracy: 10.0,
-  speed: 5.0,
-  timestamp: DateTime.now(),
-  metadata: {'vehicle_id': 'truck_001'},
-);
-
-// Send immediately
-final success = await VietmapTrackingPlugin.instance.sendLocation(location);
-if (success) {
-  print('Location sent successfully!');
-}
-```
-
-### 3. Background Tracking
+### 2. Background Tracking
 
 ```dart
 // Start background location tracking
@@ -160,7 +143,7 @@ bool isRunning = await VietmapTrackingPlugin.instance.isTrackingServiceRunning()
 await VietmapTrackingPlugin.instance.stopLocationTracking();
 ```
 
-### 4. Test Connection
+### 3. Test Connection
 
 ```dart
 // Test connection before starting tracking
@@ -187,7 +170,7 @@ await VietmapTrackingPlugin.instance.initialize(
     batchInterval: Duration(minutes: 2),        // Send every 2 minutes
     httpTimeout: Duration(seconds: 30),         // HTTP timeout
     maxRetryAttempts: 3,                        // Retry failed requests
-    trackingInterval: Duration(seconds: 30),    // Location tracking interval (default: 30s)
+    trackingIntervalSeconds: 30,                // Location tracking interval (default: 30s)
     additionalConfig: {
       'debug': true,
       'compression': 'gzip',
@@ -196,52 +179,20 @@ await VietmapTrackingPlugin.instance.initialize(
 );
 ```
 
-### Dynamic Tracking Interval
+### 4. Dynamic Tracking Interval
 
 You can update the tracking interval at runtime:
 
 ```dart
 // Update to 15 seconds
-await VietmapTrackingPlugin.instance.setTrackingInterval(Duration(seconds: 15));
+await VietmapTrackingPlugin.instance.setTrackingInterval(15);
 
-// Update to 1 minute
-await VietmapTrackingPlugin.instance.setTrackingInterval(Duration(minutes: 1));
+// Update to 1 minute  
+await VietmapTrackingPlugin.instance.setTrackingInterval(60);
 
 // Get current interval
 final currentInterval = await VietmapTrackingPlugin.instance.getTrackingInterval();
-print('Current tracking interval: ${currentInterval.inSeconds}s');
-```
-
-## Error Handling & Callbacks
-
-The tracking functionality now handles errors automatically through the `TrackingLocation` class. Failed locations are cached locally and retried when connectivity is restored.
-
-```dart
-// Send location with automatic error handling
-final success = await VietmapTrackingPlugin.instance.sendLocation(location);
-if (!success) {
-  print('Location will be cached and retried later');
-}
-
-// Check cached locations
-final cachedCount = await VietmapTrackingPlugin.instance.getCachedLocationsCount();
-print('Cached locations waiting to be sent: $cachedCount');
-
-// Manually clear cached locations if needed
-await VietmapTrackingPlugin.instance.clearCachedLocations();
-
-// Test connection before starting tracking
-try {
-  final testResponse = await VietmapTrackingPlugin.instance.testConnection();
-  if (testResponse['success']) {
-    print('🌐 Connection test passed');
-    // Start tracking
-  } else {
-    print('🔌 Connection test failed: ${testResponse['message']}');
-  }
-} catch (e) {
-  print('❌ Connection error: $e');
-}
+print('Current tracking interval: ${currentInterval}s');
 ```
 
 ## Background Tracking
